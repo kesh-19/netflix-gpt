@@ -1,13 +1,9 @@
-import { useState, useEffect } from "react";
-
 function App() {
-  const [first, setFirst] = useState(0);
-
-  useEffect(() => {
-    setFirst(1);
-  }, []);
-
-  return <div className="App">{first}</div>;
+  return (
+    <div className="App">
+      <div>a</div>
+    </div>
+  );
 }
 
 export default App;
