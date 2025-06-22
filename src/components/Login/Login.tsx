@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
+import { addUser } from "../store/slices/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const StyledBG = styled.div`
   background-image: url("https://assets.nflxext.com/ffe/siteui/vlv3/8200f588-2e93-4c95-8eab-ebba17821657/web/IN-en-20250616-TRIFECTA-perspective_9cbc87b2-d9bb-4fa8-9f8f-a4fe8fc72545_small.jpg");
@@ -27,9 +30,10 @@ const StyledSignInText = styled.div`
   align-items: start;
   font-size: 24px;
 `;
-const StyledLoginContainer = styled.div`
+const StyledLoginContainer = styled.div<{ $initialHeight: number }>`
   background-color: black;
-  min-height: 400px;
+  padding: 30px 0 40px 0;
+  min-height: ${(props) => props.$initialHeight}px;
   min-width: 300px;
   border-radius: 10px;
   opacity: 90%;
@@ -62,7 +66,11 @@ const Login = () => {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignIn, setIsSignIn] = useState(true);
+  const [isSignIn, setIsSignIn] = useState(false);
+  const [initialHeight, setInitialHeight] = useState(0);
+  const loginContainerRef = useRef<any>(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     const res: {
@@ -78,10 +86,22 @@ const Login = () => {
       res.fullName = fullName;
     }
 
-    console.log(res);
+    dispatch(
+      addUser({
+        username: "shreyas",
+        password: "abcd",
+        fullName: "shreyas k",
+      })
+    );
+    navigate("/browse");
   };
 
+  useEffect(() => {
+    setInitialHeight(loginContainerRef.current?.clientHeight);
+  }, []);
+
   const handleSignInToggle = () => setIsSignIn((prev) => !prev);
+
   return (
     <StyledBG>
       <StyledLogo
@@ -89,7 +109,10 @@ const Login = () => {
         alt="nflix"
       />
       <StyledContainer>
-        <StyledLoginContainer>
+        <StyledLoginContainer
+          ref={loginContainerRef}
+          $initialHeight={initialHeight}
+        >
           <StyledSignInText>
             {isSignIn ? "Sign In" : "Sign Up"}
           </StyledSignInText>
