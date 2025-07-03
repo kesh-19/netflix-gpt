@@ -1,18 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { addUser } from "../store/slices/userSlice";
+import { addUser, UserType } from "../store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
+import Header from "../Content/Header";
 
 const StyledBG = styled.div`
   background-image: url("https://assets.nflxext.com/ffe/siteui/vlv3/8200f588-2e93-4c95-8eab-ebba17821657/web/IN-en-20250616-TRIFECTA-perspective_9cbc87b2-d9bb-4fa8-9f8f-a4fe8fc72545_small.jpg");
   height: 100vh;
 `;
-const StyledLogo = styled.img`
-  height: 100px;
-  width: 250px;
-  position: absolute;
-`;
+
 const StyledContainer = styled.div`
   display: flex;
   height: 100%;
@@ -72,7 +69,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     const res: {
       username: string;
       password: string;
@@ -86,28 +83,25 @@ const Login = () => {
       res.fullName = fullName;
     }
 
-    dispatch(
-      addUser({
-        username: "shreyas",
-        password: "abcd",
-        fullName: "shreyas k",
-      })
-    );
+    const newUser: UserType = {
+      username: "shreyas",
+      email: "shreyas@abcd.com",
+    };
+
+    dispatch(addUser(newUser));
     navigate("/browse");
-  };
+  }, [dispatch, fullName, isSignIn, navigate, password, username]);
 
   useEffect(() => {
     setInitialHeight(loginContainerRef.current?.clientHeight);
-  }, []);
+    handleSubmit();
+  }, [handleSubmit]);
 
   const handleSignInToggle = () => setIsSignIn((prev) => !prev);
 
   return (
     <StyledBG>
-      <StyledLogo
-        src="https://help.nflxext.com/helpcenter/OneTrust/oneTrust_production/consent/87b6a5c0-0104-4e96-a291-092c11350111/01938dc4-59b3-7bbc-b635-c4131030e85f/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
-        alt="nflix"
-      />
+      <Header />
       <StyledContainer>
         <StyledLoginContainer
           ref={loginContainerRef}
